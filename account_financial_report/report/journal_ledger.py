@@ -97,6 +97,17 @@ class JournalLedgerReport(models.AbstractModel):
             tax_debit = ml.tax_line_id and ml.debit or 0.0
             tax_credit = ml.tax_line_id and ml.credit or 0.0
             tax_balance = ml.tax_line_id and ml.balance or 0.0
+
+        ref_label = ml.name
+        if ml.exclude_from_invoice_tab == False:
+           if ml.move_id.move_type != 'entry':
+              ref_label = "Factura " + ml.move_name
+              if ml.move_id.move_type in ('in_invoice', 'in_refund'):
+                 if ml.ref:
+                    ref_label = "Su Factura " + ml.ref 
+                 else:
+                    ref_label = "Factura " + ml.move_name
+
         return {
             "move_line_id": ml.id,
             "move_id": ml.move_id.id,
@@ -104,7 +115,7 @@ class JournalLedgerReport(models.AbstractModel):
             "journal_id": ml.journal_id.id,
             "account_id": ml.account_id.id,
             "partner_id": ml.partner_id.id,
-            "label": ml.name,
+            "label": ref_label,
             "debit": ml.debit,
             "credit": ml.credit,
             "company_currency_id": ml.company_currency_id.id,
