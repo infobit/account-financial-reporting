@@ -333,6 +333,10 @@ class GeneralLedgerReport(models.AbstractModel):
             ref_label = move_line_data["ref"]
         else:
             ref_label = move_line_data["ref"] + str(" - ") + move_line_data["name"]
+
+        if move_line["exclude_from_invoice_tab"] == False:
+            ref_label = "Factura " + move_line["move_id"][1]
+
         move_line_data.update({"ref_label": ref_label})
         return move_line_data
 
@@ -467,6 +471,7 @@ class GeneralLedgerReport(models.AbstractModel):
             "ref",
             "name",
             "analytic_account_id",
+            "exclude_from_invoice_tab",
         ]
         move_lines = self.env["account.move.line"].search_read(
             domain=domain, fields=ml_fields
